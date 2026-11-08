@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1712a5">
+<title>Absensi Siswa</title>
+<style>
+:root{--purple:#6d35f5;--blue:#2457f5;--ink:#15172b;--muted:#7c8299}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);
+background:radial-gradient(circle at 10% 0%,#2522a9 0,#17154d 38%,#080d1b 100%);padding:28px 16px;display:flex;justify-content:center;align-items:center}
+.wrap{width:min(100%,520px)}
+.hero{color:white;padding:8px 6px 22px}
+.brand{font-size:11px;letter-spacing:2.3px;font-weight:800;opacity:.85;margin-bottom:12px}
+h1{font-size:clamp(27px,7vw,36px);line-height:1.1;margin:0 0 8px;font-weight:850}
+.hero p{margin:0;color:#d9dcff;font-size:14px}
+.clock{margin-top:20px;padding:17px 18px;border:1px solid #ffffff25;border-radius:18px;background:#ffffff12;backdrop-filter:blur(12px)}
+#time{font-size:clamp(29px,8vw,39px);font-weight:850;letter-spacing:1px;font-variant-numeric:tabular-nums}
+#date{font-size:13px;color:#e0e4ff;margin-top:3px}
+.wib{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:#dce2ff;background:#ffffff16;border:1px solid #ffffff20;border-radius:30px;padding:6px 10px;margin-top:11px}
+.dot{width:7px;height:7px;border-radius:50%;background:#4dffb0;box-shadow:0 0 10px #4dffb0}
+.card{background:#fff;border-radius:22px;padding:24px;box-shadow:0 22px 65px #0006}
+h2{font-size:20px;margin:0 0 5px}
+.sub{font-size:12px;color:var(--muted);margin:0 0 21px}
+.title{display:block;font-size:13px;font-weight:750;margin:17px 0 9px}
+input[type=text]{width:100%;padding:14px 15px;border:1.5px solid #dfe2ee;border-radius:12px;font:inherit;font-size:14px;outline:none;transition:.2s}
+input[type=text]:focus{border-color:var(--purple);box-shadow:0 0 0 3px #7545f51c}
+.status{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.opt{display:flex;align-items:center;gap:8px;border:1.5px solid #e7e8f0;border-radius:12px;padding:12px 11px;font-size:13px;font-weight:650;cursor:pointer;transition:.18s}
+.opt:has(input:checked){border-color:var(--purple);background:#f4f0ff;color:#4f28c7}
+.opt input{accent-color:var(--purple);margin:0}
+.send{width:100%;border:0;border-radius:12px;padding:15px;margin-top:20px;color:white;font-size:14px;font-weight:800;letter-spacing:.2px;background:linear-gradient(110deg,var(--purple),var(--blue));box-shadow:0 8px 20px #5635db35;cursor:pointer}
+.send:disabled{opacity:.65;cursor:wait}
+.success,.error{display:none;margin-top:13px;border-radius:11px;padding:12px;font-size:13px}
+.success{background:#e9fbf0;color:#16723b}.error{background:#fff0f0;color:#a32929}
+.note{text-align:center;color:#858ba0;font-size:11px;line-height:1.6;margin:15px 3px 0}
+.footer{text-align:center;color:#c6c9ed;font-size:11px;margin:18px 0 0}
+@media(max-width:390px){.card{padding:20px}.opt{font-size:12px;padding:11px 9px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="hero">
+    <div class="brand">MADZxSIGMA · STUDENT SYSTEM</div>
+    <h1>Absensi Siswa 📚</h1>
+    <p>Isi kehadiranmu hari ini dengan mudah!</p>
+    <div class="clock">
+      <div id="time">--:--:--</div>
+      <div id="date">Memuat tanggal...</div>
+      <span class="wib"><i class="dot"></i> 🌐 Waktu Indonesia Barat (WIB)</span>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2>📝 Form Absensi</h2>
+    <p class="sub">Isi data dengan benar sebelum mengirim.</p>
+    <form id="attendanceForm">
+      <label class="title" for="name">Nama lengkap siswa</label>
+      <input id="name" name="name" type="text" maxlength="60" placeholder="Masukkan nama lengkap..." autocomplete="name" required>
+
+      <span class="title">Pilih status kehadiran</span>
+      <div class="status">
+        <label class="opt"><input type="radio" name="status" value="Hadir" required><span>✅ Hadir</span></label>
+        <label class="opt"><input type="radio" name="status" value="Izin"><span>📩 Izin</span></label>
+        <label class="opt"><input type="radio" name="status" value="Sakit"><span>😷 Sakit</span></label>
+        <label class="opt"><input type="radio" name="status" value="Alpa"><span>❌ Alpa</span></label>
+      </div>
+      <button class="send" id="send" type="submit">Kirim Absensi 🚀</button>
+      <div class="success" id="success" role="status">✅ Absensi berhasil dikirim!</div>
+      <div class="error" id="error" role="alert"></div>
+    </form>
+    <p class="note">Data absensi dikirim ke email pengelola. Siswa tidak ditampilkan rekapnya di halaman ini.</p>
+  </section>
+  <div class="footer">Made with 💜 · Student Attendance</div>
+</main>
+
+<!-- EmailJS SDK. Isi konfigurasi di bawah setelah membuat akun EmailJS. -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="config.js"></script>
+<script>
+const timeEl=document.getElementById('time');
+const dateEl=document.getElementById('date');
+function updateClock(){
+  const now=new Date();
+  timeEl.textContent=new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(now);
+  dateEl.textContent=new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(now);
+}
+updateClock();setInterval(updateClock,1000);
+
+const form=document.getElementById('attendanceForm');
+const send=document.getElementById('send');
+const success=document.getElementById('success');
+const error=document.getElementById('error');
+form.addEventListener('submit',async(e)=>{
+  e.preventDefault();success.style.display='none';error.style.display='none';
+  const cfg=window.EMAILJS_CONFIG||{};
+  if(!cfg.publicKey||!cfg.serviceId||!cfg.templateId){
+    error.textContent='EmailJS belum dikonfigurasi. Buka README.txt untuk petunjuk pengaturan.';
+    error.style.display='block';return;
+  }
+  const status=form.querySelector('input[name="status"]:checked')?.value;
+  const now=new Date();
+  const params={
+    student_name:document.getElementById('name').value.trim(),
+    attendance_status:status,
+    attendance_date:new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',dateStyle:'full'}).format(now),
+    attendance_time:new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',timeStyle:'medium'}).format(now),
+    timezone:'WIB'
+  };
+  if(!params.student_name||!status)return;
+  send.disabled=true;send.textContent='Mengirim absensi...';
+  try{
+    emailjs.init({publicKey:cfg.publicKey});
+    await emailjs.send(cfg.serviceId,cfg.templateId,params);
+    success.style.display='block';form.reset();
+  }catch(err){
+    error.textContent='Gagal mengirim absensi. Periksa konfigurasi EmailJS dan koneksi internet, lalu coba lagi.';
+    error.style.display='block';
+  }finally{send.disabled=false;send.textContent='Kirim Absensi 🚀';}
+});
+</script>
+</body>
+</html>
